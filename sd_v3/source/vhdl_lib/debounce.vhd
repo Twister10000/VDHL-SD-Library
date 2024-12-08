@@ -63,49 +63,56 @@ begin
 	debounced <= last;
 
 	debounce_process: process(rst, clk, key)
-	begin
-		if rst = '0' then
-			s_tick <= '0';
-			val_s <= 0;
-			last <= key;
-		else
-			--#############################
-			--#############################
-			if last = key then
+    begin
+
+     if clk'event and clk = '1' then
+				if clk_en = '1' then
+        --======================
+								case val_s is
+										when n =>
+												---------------
+												if key = '0' then
+														s_tick <= '1';
+												end if;
+												last <= key;
+												val_s <= 0;
+												---------------
+										when others =>
+												val_s <= val_s + 1;
+								end case;
+				--======================
+	
+        end if;
+      if rst = '0' then
+				s_tick <= '0';
 				val_s <= 0;
-
-			elsif clk'event and clk = '1' then
-				if clk_en = '1' then
-					--======================
-					case val_s is
-						when n =>
-							---------------
-							if key = '0' then
-								s_tick <= '1';
-							end if;
-							last <= key;
-							val_s <= 0;
-							---------------
-						when others =>
-							val_s <= val_s + 1;
-					end case;
-					--======================
-
+				last <= key;
+      else
+				if last = key then
+								val_s <= 0;
 				end if;
-			end if;
+      end if;
+    end if;
 
-			--#############################
-			--#############################
-			if clk'event and clk = '1' then
-				if clk_en = '1' then
+     --#############################
+     --#############################
+     if clk'event and clk = '1' then
+			if clk_en = '1' then
 					--======================
 					if s_tick = '1' then
-						s_tick <= '0';
+							s_tick <= '0';
 					end if;
 					--======================
-				end if;
 			end if;
-
-		end if;
-	end process;
+			if rst = '0' then
+				s_tick <= '0';
+				val_s <= 0;
+				last <= key;
+				else
+					if last = key then
+									val_s <= 0;
+					end if;
+			end if;
+    end if;
+    end process;
 end debounce_a;
